@@ -162,10 +162,10 @@ export const LeadCaptureBubble = (props: Props) => {
                 <SaveLeadButton buttonColor={props.sendButtonColor} isLoading={isLeadSaving()} />
                 <button
                   type="button"
-                  class="text-sm text-blue-500 hover:underline"
+                  class="px-4 py-2 text-white font-semibold rounded-md bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors duration-200"
                   onClick={handleSkipLeadForm}
                 >
-                  Pular este passo
+                  Pular Formulário
                 </button>
               </div>
             </div>
