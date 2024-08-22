@@ -29,9 +29,9 @@ const defaultFontSize = 16;
 const phoneRegex = new RegExp(/^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/);
 
 const LeadCaptureSchema = z.object({
-  name: z.string().min(2, 'Name is too short').optional(),
-  email: z.string().email('Please provide a valid email').optional(),
-  phone: z.string().min(5, 'Phone number is too short').regex(phoneRegex, 'Invalid Number!').optional(),
+  name: z.string().min(2, 'O nome é muito curto').optional(),
+  email: z.string().email('Por favor! Forneça um e-mail válido').optional(),
+  phone: z.string().min(5, 'Por favor! Forneça um número de telefone válido').regex(phoneRegex, 'Número inválido!').optional(),
 });
 
 export const LeadCaptureBubble = (props: Props) => {
@@ -81,6 +81,11 @@ export const LeadCaptureBubble = (props: Props) => {
     setIsLeadSaving(false);
   };
 
+  const handleSkipLeadForm = () => {
+    props.setIsLeadSaved(true);
+    setLocalStorageChatflow(props.chatflowid, props.chatId, { leadSkipped: true });
+  };
+
   return (
     <div class="flex flex-row justify-start mb-2 items-start host-container" style={{ 'margin-right': '50px' }}>
       <Show when={props.showAvatar}>
@@ -96,23 +101,23 @@ export const LeadCaptureBubble = (props: Props) => {
           'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}px`,
         }}
       >
-        {props.isLeadSaved || getLocalStorageChatflow(props.chatflowid)?.lead ? (
+        {props.isLeadSaved || getLocalStorageChatflow(props.chatflowid)?.lead || getLocalStorageChatflow(props.chatflowid)?.leadSkipped ? (
           <div class="flex flex-col gap-2">
             <span style={{ 'white-space': 'pre-line' }}>
-              {props.leadsConfig?.successMessage || 'Thank you for submitting your contact information.'}
+              {props.leadsConfig?.successMessage || 'Obrigado por enviar suas informações de contato.'}
             </span>
           </div>
         ) : (
           <form class="flex flex-col gap-2" onSubmit={handleLeadCaptureSubmit}>
-            <span style={{ 'white-space': 'pre-line' }}>{props.leadsConfig?.title || 'Let us know where we can reach you:'}</span>
+            <span style={{ 'white-space': 'pre-line' }}>{props.leadsConfig?.title || 'Deixe-nos saber como podemos entrar em contato com você:'}</span>
             <div class="flex flex-col gap-2 w-full">
               {props.leadsConfig?.name && (
                 <div class="w-full flex flex-col items-start justify-start gap-1">
-                  <div class={'w-full flex items-center justify-between chatbot-input border border-[#eeeeee]'}>
+                  <div class="w-full flex items-center justify-between chatbot-input border border-[#eeeeee]">
                     <input
-                      class="focus:outline-none bg-transparent px-4 py-4 flex-1 w-full h-full min-h-[56px] max-h-[128px] text-input disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 "
-                      placeholder="Name"
-                      name="name"
+                      class="focus:outline-none bg-transparent px-4 py-4 flex-1 w-full h-full min-h-[56px] max-h-[128px] text-input disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100"
+                      placeholder="Nome"
+                      name="Nome"
                       style={{ width: '100%' }}
                       value={leadName()}
                       onChange={(e) => setLeadName(e.currentTarget.value)}
@@ -123,11 +128,11 @@ export const LeadCaptureBubble = (props: Props) => {
               )}
               {props.leadsConfig?.email && (
                 <div class="w-full flex flex-col items-start justify-start gap-1">
-                  <div class={'w-full flex items-center justify-between chatbot-input border border-[#eeeeee]'}>
+                  <div class="w-full flex items-center justify-between chatbot-input border border-[#eeeeee]">
                     <input
-                      class="focus:outline-none bg-transparent px-4 py-4 flex-1 w-full h-full min-h-[56px] max-h-[128px] text-input disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 "
+                      class="focus:outline-none bg-transparent px-4 py-4 flex-1 w-full h-full min-h-[56px] max-h-[128px] text-input disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100"
                       type="email"
-                      placeholder="Email Address"
+                      placeholder="Email"
                       name="email"
                       style={{ width: '100%' }}
                       value={leadEmail()}
@@ -139,11 +144,11 @@ export const LeadCaptureBubble = (props: Props) => {
               )}
               {props.leadsConfig?.phone && (
                 <div class="w-full flex flex-col items-start justify-start gap-1">
-                  <div class={'w-full flex items-center justify-between chatbot-input border border-[#eeeeee]'}>
+                  <div class="w-full flex items-center justify-between chatbot-input border border-[#eeeeee]">
                     <input
-                      class="focus:outline-none bg-transparent px-4 py-4 flex-1 w-full h-full min-h-[56px] max-h-[128px] text-input disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 "
+                      class="focus:outline-none bg-transparent px-4 py-4 flex-1 w-full h-full min-h-[56px] max-h-[128px] text-input disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100"
                       type="number"
-                      placeholder="Phone Number"
+                      placeholder="Telefone"
                       name="phone"
                       style={{ width: '100%' }}
                       value={leadPhone()}
@@ -153,8 +158,15 @@ export const LeadCaptureBubble = (props: Props) => {
                   {leadFormError() && leadFormError()?.phone && <span class="text-sm text-red-500">{leadFormError()?.phone[0]}</span>}
                 </div>
               )}
-              <div class="flex items-center justify-end gap-1">
+              <div class="flex items-center justify-between gap-2">
                 <SaveLeadButton buttonColor={props.sendButtonColor} isLoading={isLeadSaving()} />
+                <button
+                  type="button"
+                  class="text-sm text-blue-500 hover:underline"
+                  onClick={handleSkipLeadForm}
+                >
+                  Pular este passo
+                </button>
               </div>
             </div>
           </form>
