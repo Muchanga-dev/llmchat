@@ -165,7 +165,7 @@ export const LeadCaptureBubble = (props: Props) => {
                   class="px-4 py-2 text-white font-semibold rounded-md bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors duration-200"
                   onClick={handleSkipLeadForm}
                 >
-                  Pular Formulário
+                 Pular Formulário
                 </button>
               </div>
             </div>
