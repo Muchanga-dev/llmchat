@@ -86,6 +86,19 @@ export const LeadCaptureBubble = (props: Props) => {
     setLocalStorageChatflow(props.chatflowid, props.chatId, { leadSkipped: true });
   };
 
+  const CommonButton = (text: string, onClick: () => void, isLoading: boolean = false) => (
+    <button
+      type="button"
+      onClick={onClick}
+      class={`px-4 py-2 text-white font-semibold rounded-md ${
+        isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+      }`}
+      disabled={isLoading}
+    >
+      {isLoading ? 'Carregando...' : text}
+    </button>
+  );
+
   return (
     <div class="flex flex-row justify-start mb-2 items-start host-container" style={{ 'margin-right': '50px' }}>
       <Show when={props.showAvatar}>
@@ -159,14 +172,11 @@ export const LeadCaptureBubble = (props: Props) => {
                 </div>
               )}
               <div class="flex items-center justify-between gap-2">
-                <SaveLeadButton buttonColor={props.sendButtonColor} isLoading={isLeadSaving()} />
-                <button
-                  type="button"
-                  class="text-sm text-blue-500 hover:underline"
-                  onClick={handleSkipLeadForm}
-                >
-                  Pular este passo
-                </button>
+                {/* Botão Enviar */}
+                {CommonButton('Enviar', () => handleLeadCaptureSubmit, isLeadSaving())}
+
+                {/* Botão Pular */}
+                {CommonButton('Pular este passo', handleSkipLeadForm)}
               </div>
             </div>
           </form>
